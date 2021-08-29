@@ -1,0 +1,50 @@
+version: '3.9'
+services:
+  php:
+    container_name: php
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile-local
+    restart: always
+    ports:
+      - '9000:9000'
+    volumes:
+      - .:/var/www/html
+  rabbitmq:
+    container_name: rabbit
+    restart: unless-stopped
+    image: 'bitnami/rabbitmq:latest'
+    environment:
+      - RABBITMQ_PASSWORD=rabbitmq
+      - RABBITMQ_USERNAME=rabbitmq
+    ports:
+      - '15672:15672'
+    volumes:
+      - rabbit:/bitnami
+  mariadb:
+    container_name: mariadb
+    restart: always
+    image: 'bitnami/mariadb:latest'
+    volumes:
+      - mariadb:/bitnami/mariadb/data
+    ports:
+      - '3306:3306'
+    environment:
+      - MARIADB_ROOT_USER=root
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_USER=mrrobot
+      - MARIADB_PASSWORD=mrrobot
+      - MARIADB_DATABASE=purpleclouds
+  nginx:
+    container_name: nginx
+    restart: unless-stopped
+    image: 'bitnami/nginx:latest'
+    ports:
+      - '8888:8888'
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/purpleclouds.conf:/opt/bitnami/nginx/conf/server_blocks/purpleclouds.conf:ro
+
+volumes:
+  rabbit:
+  mariadb:

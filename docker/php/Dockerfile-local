@@ -1,0 +1,17 @@
+FROM php:8.0.9-fpm-alpine
+
+RUN set -ex
+RUN apk add --no-cache \
+    $PHPIZE_DEPS && \
+    docker-php-ext-install pdo pdo_mysql && \
+    docker-php-ext-enable pdo pdo_mysql && \
+    docker-php-ext-install opcache && \
+    docker-php-ext-enable opcache && \
+    rm -rf /tmp/pear
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer creates=/usr/local/bin/composer warn=no
+
+COPY ./docker/php/php.ini $PHP_INI_DIR/php.ini
+
+RUN pecl install xdebug
+RUN docker-php-ext-enable --ini-name xdebug.ini xdebug
