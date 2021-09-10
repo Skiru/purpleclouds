@@ -12,6 +12,7 @@ RUN apk add --no-cache \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer creates=/usr/local/bin/composer warn=no
 
 COPY ./docker/php/php.ini $PHP_INI_DIR/php.ini
+COPY ./docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 RUN pecl install xdebug
 RUN docker-php-ext-enable --ini-name xdebug.ini xdebug
